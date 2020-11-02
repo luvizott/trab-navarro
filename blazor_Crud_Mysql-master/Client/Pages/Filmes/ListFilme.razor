@@ -1,0 +1,55 @@
+@page  "/Filme/ListFilme"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h3>Filmes marcadas</h3>
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Médico</th>
+                <th scope="col">Paciente</th>
+                <th scope="col">Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in filmeList)
+            {
+            <tr>
+                <td>@item.Genero</td>
+                <td>@item.Name</td>
+                <td>@item.Date</td>
+                <td>
+                    <a href="/Filme/EditFilme/@item.Id.ToString()" ><button class="btn btn-success">Editar</button></a>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteFilme(item.Id))">Delete</button>
+                </td>
+            </tr>
+            }   
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    private List<Filme> filmeList = new List<Filme>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var filmes = await Http.GetFromJsonAsync<List<Filme>>("/Filme/List");
+        foreach (var item in filmes)
+        {
+            filmeList.Add(item);
+        }
+    }
+
+    private async Task DeleteFilme(int itemId)
+    {
+        //call controller
+        await Http.DeleteAsync("/Filme/Delete/"+itemId);
+        NavigationManager.NavigateTo("Filme/ListFilme", true);
+    }
+
+}

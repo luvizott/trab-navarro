@@ -1,0 +1,66 @@
+@page  "/Filme/CadastroFilme"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="card m-3">
+    <h4 class="card-header">Marcar filme</h4>
+    <div class="card-body">
+        <EditForm Model="@filme" OnValidSubmit="HandleValidSubmit" @onreset="HandleReset">
+            <DataAnnotationsValidator />
+            <div class="form-row">
+                <div class="form-group col">
+                    <label>Gênero</label>
+                    <InputSelect @bind-Value="filme.Genero" class="form-control">
+                        <option value=""></option>
+                        <option value="Terror">Terror</option>
+                        <option value="Comédia">Comédia</option>
+                        <option value="Ação">Ação</option>
+                        <option value="Suspense">Suspense</option>
+                        <option value="Ficção">Ficção</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => filme.Genero)" />
+                </div>
+                <div class="form-group col-5">
+                    <label>Nome</label>
+                    <InputText @bind-Value="filme.Name" class="form-control" />
+                    <ValidationMessage For="@(() => filme.Name)" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col">
+                    <label>Data de lançamento</label>
+                    <InputDate @bind-Value="filme.Date" class="form-control" />
+                    <ValidationMessage For="@(() => filme.Date)" />
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mr-1">Salvar</button>
+                <button type="reset" class="btn btn-secondary">Cancel</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    private Filme filme = new Filme();
+    private EditContext editContext { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        //Enviar dados para o Controller no Backend
+        var teste = await Http.PostAsJsonAsync("/Filme/Create", filme);
+        NavigationManager.NavigateTo("filme/ListFilme");
+
+    }
+
+    private void HandleReset()
+    {
+        filme = new Filme();
+        editContext = new EditContext(filme);
+    }
+
+    
+
+}
